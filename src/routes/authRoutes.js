@@ -3,7 +3,9 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    register
+    register,
+    checkEmail,
+    checkPhone
 } = require("../controllers/authController");
 
 const {
@@ -14,6 +16,18 @@ router.post(
     "/register",
     registrationLimiter,
     register
+);
+
+router.post(
+    "/check-email",
+    registrationLimiter,
+    checkEmail
+);
+
+router.post(
+    "/check-phone",
+    registrationLimiter,
+    checkPhone
 );
 
 module.exports = router;

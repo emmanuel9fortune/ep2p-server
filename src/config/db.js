@@ -10,8 +10,15 @@ const connectDB = async () => {
 
         database = client.db();
 
-        await database.collection("users").createIndex(
+        const user = database.collection("users")
+        
+        await user.createIndex(
             { email: 1 },
+            { unique: true }
+        );
+        
+        await user.createIndex(
+            { phone: 1 },
             { unique: true }
         );
 

@@ -8,6 +8,7 @@ const usersCollection = () => {
 const createUser = async ({
     firstName,
     lastName,
+    dob,
     email,
     phone,
     passwordHash
@@ -17,11 +18,13 @@ const createUser = async ({
     const user = {
         firstName,
         lastName,
+        dob,
+
         email,
         phone,
         passwordHash,
 
-        status: "active",
+        status: "pending_verification",
 
         emailVerified: false,
         phoneVerified: false,
@@ -44,14 +47,37 @@ const findUserByEmail = async (email) => {
     });
 };
 
+const findUserByPhone = async (phone) => {
+    return usersCollection().findOne({
+        phone
+    });
+};
+
 const findUserById = async (userId) => {
     return usersCollection().findOne({
         _id: new ObjectId(userId)
     });
 };
 
+const verifyUserEmail = async (userId) => {
+    return usersCollection().updateOne(
+        {
+            _id: userId
+        },
+        {
+            $set: {
+                emailVerified: true,
+                status: "active",
+                updatedAt: new Date()
+            }
+        }
+    );
+};
+
 module.exports = {
     createUser,
     findUserByEmail,
-    findUserById
+    findUserByPhone,
+    findUserById,
+    verifyUserEmail
 };
