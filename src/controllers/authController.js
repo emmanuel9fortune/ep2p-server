@@ -49,6 +49,19 @@ const register = async (req, res) => {
             });
         }
 
+        const normalizedPhone = phone.trim();
+        
+        const existingPhone = await findUserByPhone(
+            normalizedPhone
+        );
+
+        if (existingPhone) {
+            return res.status(409).json({
+                success: false,
+                message: "An account with this phone number already exists"
+            });
+        }
+
         // Hash password
         const passwordHash = await argon2.hash(password);
 
