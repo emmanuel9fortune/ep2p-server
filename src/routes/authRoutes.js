@@ -5,11 +5,15 @@ const router = express.Router();
 const {
     register,
     checkEmail,
-    checkPhone
+    checkPhone,
+    verifyEmailOTP,
+    resendEmailOTP,
+    login
 } = require("../controllers/authController");
 
 const {
-    registrationLimiter
+    registrationLimiter,
+    authLimiter
 } = require("../middleware/ratelimiter");
 
 router.post(
@@ -28,6 +32,24 @@ router.post(
     "/check-phone",
     registrationLimiter,
     checkPhone
+);
+
+router.post(
+    "/verify-email-otp",
+    registrationLimiter,
+    verifyEmailOTP
+);
+
+router.post(
+    "/resend-email-otp",
+    registrationLimiter,
+    resendEmailOTP
+);
+
+router.post(
+    "/login",
+    authLimiter,
+    login
 );
 
 module.exports = router;

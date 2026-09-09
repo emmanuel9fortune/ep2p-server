@@ -82,9 +82,30 @@ const markOTPVerified = async (otpId) => {
     );
 };
 
+const invalidatePreviousOTPs = async ({
+    userId,
+    purpose
+}) => {
+    return otpCollection().updateMany(
+        {
+            userId,
+            purpose,
+            verified: false
+        },
+        {
+            $set: {
+                verified: true,
+                invalidated: true,
+                invalidatedAt: new Date()
+            }
+        }
+    );
+};
+
 module.exports = {
     createOTP,
     findLatestOTP,
     incrementAttempts,
-    markOTPVerified
+    markOTPVerified,
+    invalidatePreviousOTPs
 };

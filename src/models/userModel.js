@@ -62,7 +62,8 @@ const findUserById = async (userId) => {
 const verifyUserEmail = async (userId) => {
     return usersCollection().updateOne(
         {
-            _id: userId
+            _id: userId,
+            emailVerified: false
         },
         {
             $set: {
