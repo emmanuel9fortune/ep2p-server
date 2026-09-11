@@ -7,6 +7,8 @@ const {
 } = require("./middleware/ratelimiter");
 
 const authRoutes = require("./routes/authRoutes");
+const walletRoutes = require("./routes/walletRoutes");
+const depositRoutes = require("./routes/depositRoutes");
 
 const app = express();
 
@@ -82,6 +84,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/wallet", walletRoutes);
+app.use("/api/deposits", depositRoutes);
 
 
 // -----------------------------

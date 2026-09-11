@@ -8,13 +8,15 @@ const {
     checkPhone,
     verifyEmailOTP,
     resendEmailOTP,
-    login
+    login,
+    getCurrentUser
 } = require("../controllers/authController");
 
 const {
     registrationLimiter,
     authLimiter
 } = require("../middleware/ratelimiter");
+const { requireAuth } = require("../middleware/authMiddleware");
 
 router.post(
     "/register",
@@ -50,6 +52,12 @@ router.post(
     "/login",
     authLimiter,
     login
+);
+
+router.get(
+    "/me",
+    requireAuth,
+    getCurrentUser
 );
 
 module.exports = router;

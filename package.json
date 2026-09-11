@@ -12,6 +12,7 @@
     "dev": "nodemon index.js"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^6.0.3",
     "argon2": "^0.45.1",
     "body-parser": "^2.3.0",
     "cors": "^2.8.6",

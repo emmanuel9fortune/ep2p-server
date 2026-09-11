@@ -21,6 +21,7 @@ const {
 } = require("../models/otpModel");
 const { generateOTP, hashOTP } = require("../utils/otp");
 const { generateAccessToken } = require("../services/authServices");
+const { sendVerificationOTP } = require("../services/emailService");
 
 const register = async (req, res) => {
     try {
@@ -96,6 +97,12 @@ const register = async (req, res) => {
             email: user.email,
             otpHash,
             purpose: "account_verification"
+        });
+        
+        await sendVerificationOTP({
+            email: user.email,
+            firstName: user.firstName,
+            otp,
         });
 
         return res.status(201).json({
@@ -400,6 +407,12 @@ const resendEmailOTP = async (req, res) => {
             purpose: "email_verification"
         });
 
+        await sendVerificationOTP({
+            email: user.email,
+            firstName: user.firstName,
+            otp,
+        });
+
         // DEVELOPMENT ONLY
         console.log(
             `New email verification OTP for ${user.email}: ${otp}`
@@ -531,11 +544,44 @@ const login = async (req, res) => {
     }
 };
 
+const getCurrentUser = async (req, res) => {
+    try {
+        const user = req.user;
+
+        return res.status(200).json({
+            success: true,
+            user: {
+                id: user._id.toString(),
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                phone: user.phone,
+                dateOfBirth: user.dateOfBirth,
+                status: user.status,
+                emailVerified: user.emailVerified,
+                phoneVerified: user.phoneVerified
+            }
+        });
+
+    } catch (error) {
+        console.error(
+            "Get current user error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to retrieve user"
+        });
+    }
+};
+
 module.exports = {
     register,
     checkEmail,
     checkPhone,
     login,
     verifyEmailOTP,
-    resendEmailOTP
+    resendEmailOTP,
+    getCurrentUser
 };
