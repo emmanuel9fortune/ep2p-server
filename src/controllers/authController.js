@@ -559,7 +559,8 @@ const getCurrentUser = async (req, res) => {
                 dateOfBirth: user.dateOfBirth,
                 status: user.status,
                 emailVerified: user.emailVerified,
-                phoneVerified: user.phoneVerified
+                phoneVerified: user.phoneVerified,
+                role: user.role || "user",
             }
         });
 
@@ -576,6 +577,84 @@ const getCurrentUser = async (req, res) => {
     }
 };
 
+const adminLogin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required.",
+            });
+        }
+
+        const normalizedEmail = email.trim().toLowerCase();
+
+        const user = await findUserByEmail(normalizedEmail);
+
+        // Don't reveal whether the email exists.
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password.",
+            });
+        }
+
+        const passwordValid = await argon2.verify(
+            user.passwordHash,
+            password
+        );
+
+        if (!passwordValid) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password.",
+            });
+        }
+
+        // ADMIN ROLE CHECK
+        if (user.role !== "admin") {
+            return res.status(403).json({
+                success: false,
+                message: "Admin access required.",
+            });
+        }
+
+        if (
+            user.status !== "active" ||
+            !user.emailVerified
+        ) {
+            return res.status(403).json({
+                success: false,
+                message: "Admin account is not active.",
+            });
+        }
+
+        const token = generateAccessToken(user);
+
+        return res.status(200).json({
+            success: true,
+            message: "Admin login successful",
+            token,
+            user: {
+                id: user._id.toString(),
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                phone: user.phone,
+                role: user.role,
+            },
+        });
+    } catch (error) {
+        console.error("Admin login error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to complete admin login.",
+        });
+    }
+};
+
 module.exports = {
     register,
     checkEmail,
@@ -583,5 +662,6 @@ module.exports = {
     login,
     verifyEmailOTP,
     resendEmailOTP,
-    getCurrentUser
+    getCurrentUser,
+    adminLogin,
 };

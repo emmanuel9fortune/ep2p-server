@@ -24,6 +24,8 @@ const createUser = async ({
         phone,
         passwordHash,
 
+        role: "user",
+
         status: "pending_verification",
 
         emailVerified: false,

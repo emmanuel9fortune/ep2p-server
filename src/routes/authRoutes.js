@@ -13,9 +13,14 @@ const {
 } = require("../controllers/authController");
 
 const {
+    adminLogin,
+} = require("../controllers/authController");
+
+const {
     registrationLimiter,
     authLimiter
 } = require("../middleware/ratelimiter");
+
 const { requireAuth } = require("../middleware/authMiddleware");
 
 router.post(
@@ -58,6 +63,12 @@ router.get(
     "/me",
     requireAuth,
     getCurrentUser
+);
+
+router.post(
+    "/admin-login",
+    authLimiter,
+    adminLogin
 );
 
 module.exports = router;
